@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35931.197 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedUI", "MedUI\MedUI.csproj", "{A16983A8-5D50-437C-B45C-42D89EC8C408}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A16983A8-5D50-437C-B45C-42D89EC8C408}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A16983A8-5D50-437C-B45C-42D89EC8C408}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A16983A8-5D50-437C-B45C-42D89EC8C408}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A16983A8-5D50-437C-B45C-42D89EC8C408}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {88219B03-D678-4F84-8846-C7F1FA1919A1}
+	EndGlobalSection
+EndGlobal
