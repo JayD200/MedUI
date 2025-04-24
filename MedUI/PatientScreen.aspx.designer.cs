@@ -24,15 +24,6 @@ namespace MedUI
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
 
         /// <summary>
-        /// LoginReturn control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton LoginReturn;
-
-        /// <summary>
         /// PatientList control.
         /// </summary>
         /// <remarks>
@@ -42,39 +33,39 @@ namespace MedUI
         protected global::System.Web.UI.WebControls.Button PatientList;
 
         /// <summary>
-        /// ListView1 control.
+        /// Pt_Info control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.ListView ListView1;
+        protected global::System.Web.UI.WebControls.ListView Pt_Info;
 
         /// <summary>
-        /// ListView2 control.
+        /// Ins_Info control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.ListView ListView2;
+        protected global::System.Web.UI.WebControls.ListView Ins_Info;
 
         /// <summary>
-        /// ListView3 control.
+        /// Rx_Info control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.ListView ListView3;
+        protected global::System.Web.UI.WebControls.ListView Rx_Info;
 
         /// <summary>
-        /// ListView4 control.
+        /// Flag_info control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.ListView ListView4;
+        protected global::System.Web.UI.WebControls.ListView Flag_info;
     }
 }

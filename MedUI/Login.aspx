@@ -29,7 +29,7 @@
     <form id="form1" runat="server">
         <div style="padding: 30px;">
             <div align="right">
-                <asp:Button ID="viewType" runat="server" Text="Patient View" OnClick="viewButton" align="right" />
+                <asp:Button ID="viewType" runat="server" Text="Agent View" OnClick="viewButton" align="right" />
             </div>
             <div class="center">
                 <div>
@@ -42,8 +42,12 @@
                 <div id="LastNameDiv" runat="server" Visible="true" >
                     <asp:TextBox ID="LastName" runat="server" placeholder="Last Name" />
                 </div>
-                <div style="float: right;">
-                    <asp:Button ID="SignIn" runat="server" Text="Login" />
+
+                <div style="float:left">
+                    <a style="color:red; float: left;"><asp:Label ID="LoginError" runat="server" Text="Test" /> </a>
+                </div>
+                <div style="float:right">
+                    <asp:Button ID="SignIn" runat="server" Text="Login" OnClick="LoginButton" />
                 </div>
             </div>
         </div>

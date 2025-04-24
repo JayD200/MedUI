@@ -10,9 +10,9 @@
     <form id="form1" runat="server">
         <div style="padding: 30px;">
             <div style="text-align: center;">
-                <asp:LinkButton ID="LoginReturn" runat="server" Style="text-decoration: none; color: black;">Back to Login</asp:LinkButton>
+                <a href="Login.aspx">Back to Login</a>
             </div>
-            <div>
+            <div style="width: 100%; height: 100%;">
                 <h4>Patient List</h4>
                 <asp:ListView ID="ListView1" runat="server">
                     <LayoutTemplate>
@@ -32,10 +32,14 @@
                     <ItemTemplate>
                         <tr>
                             <td>
-                                <asp:Button ID="ViewProfile" runat="server" Text="View Patient" />
+                                <asp:Button ID="ViewProfile" runat="server"
+                                    Text="View Patient"
+                                    CommandName="View"
+                                    CommandArgument='<%# Eval("PatientID") %>'
+                                    OnCommand="ViewProfile_Command" />
                             </td>
                             <td><%# Eval("Prescription_Name") %></td>
-                            <td><%# Eval("F_Name" + "L_Name") %></td>
+                            <td><%# string.Format("{0} {1}", Eval("F_Name"), Eval("L_Name")) %></td>
                             <td><%# Eval("Doctor_Name") %></td>
                             <td><%# Eval("Flag_status") %></td>
                         </tr>
@@ -43,10 +47,14 @@
                     <AlternatingItemTemplate>
                         <tr>
                             <td>
-                                <asp:Button ID="ViewProfile" runat="server" Text="View Patient" />
+                                <asp:Button ID="ViewProfile" runat="server"
+                                    Text="View Patient"
+                                    CommandName="View"
+                                    CommandArgument='<%# Eval("PatientID") %>'
+                                    OnCommand="ViewProfile_Command" />
                             </td>
                             <td><%# Eval("Prescription_Name") %></td>
-                            <td><%# Eval("F_Name" + "L_Name") %></td>
+                            <td><%# string.Format("{0} {1}", Eval("F_Name"), Eval("L_Name")) %></td>
                             <td><%# Eval("Doctor_Name") %></td>
                             <td><%# Eval("Flag_status") %></td>
                         </tr>
