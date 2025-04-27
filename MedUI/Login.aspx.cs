@@ -62,13 +62,21 @@ namespace MedUI
                     if ((int)Session["viewID"] == 1)
                     {
                         string emailID = Email.Text.Trim();
+                        object result;
 
-                        string sql = "Select AgentEmail FROM Agent WHERE AgentEmail = @Email";
+                        if (emailID.Equals("Patient", StringComparison.OrdinalIgnoreCase))
+                        {
+                            result = null;
+                        }
+                        else
+                        {
+                            string sql = "Select AgentEmail FROM Agent WHERE AgentEmail = @Email";
 
-                        cmd.CommandText = sql;
-                        cmd.Parameters.AddWithValue("@Email", emailID);
+                            cmd.CommandText = sql;
+                            cmd.Parameters.AddWithValue("@Email", emailID);
 
-                        object result = cmd.ExecuteScalar();
+                            result = cmd.ExecuteScalar();
+                        }
                         if (result != null)
                         {
                             Session["AgentID"] = result;
