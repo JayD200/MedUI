@@ -60,13 +60,13 @@ namespace MedUI
         protected global::System.Web.UI.WebControls.ListView Rx_Info;
 
         /// <summary>
-        /// btnCreateFlag control.
+        /// Button1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnCreateFlag;
+        protected global::System.Web.UI.WebControls.Button Button1;
 
         /// <summary>
         /// Flag_info control.
@@ -105,13 +105,13 @@ namespace MedUI
         protected global::System.Web.UI.WebControls.Button btnSubmitFlag;
 
         /// <summary>
-        /// btnCancel control.
+        /// btnCancelFlag control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnCancel;
+        protected global::System.Web.UI.WebControls.Button btnCancelFlag;
 
         /// <summary>
         /// Log_Info control.

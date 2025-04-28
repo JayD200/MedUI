@@ -23,9 +23,14 @@
         }
 
         // Close the modal when Cancel is clicked
-        function cancelFlag() {
+        function openFlagModal() {
+            document.getElementById("flagModal").style.display = "block";
+        }
+
+        function closeFlagModal() {
             document.getElementById("flagModal").style.display = "none";
         }
+
     </script>
 
 </head>
@@ -178,6 +183,7 @@
                                 OnItemEditing="Ins_Info_ItemEditing"
                                 OnItemUpdating="Ins_Info_ItemUpdating"
                                 OnItemCanceling="Ins_Info_ItemCanceling">
+
                                 <LayoutTemplate>
                                     <table style="border: solid 2px #336699;" cellspacing="0" cellpadding="3" rules="all">
                                         <tr style="background-color: #336699; color: White;">
@@ -189,7 +195,6 @@
                                             <th>Classification</th>
                                             <th>Type</th>
                                             <th>Actions</th>
-                                            <!-- New column for Edit -->
                                         </tr>
                                         <tbody>
                                             <asp:PlaceHolder ID="itemPlaceHolder" runat="server" />
@@ -241,11 +246,20 @@
                                         </td>
 
                                         <td>
-                                            <asp:TextBox ID="txtEditClassification" runat="server" Text='<%# Bind("InsuranceClassification") %>' CssClass="form-control" />
+                                            <asp:DropDownList ID="ddlEditClassification" runat="server" CssClass="form-control" SelectedValue='<%# Bind("InsuranceClassification") %>'>
+                                                <asp:ListItem Text="Medicare" Value="Medicare" />
+                                                <asp:ListItem Text="Medicaide" Value="Medicaide" />
+                                                <asp:ListItem Text="Commercial" Value="Commercial" />
+                                                <asp:ListItem Text="Other Government" Value="Other Government" />
+                                            </asp:DropDownList>
                                         </td>
 
                                         <td>
-                                            <asp:TextBox ID="txtEditInsType" runat="server" Text='<%# Bind("InsType") %>' CssClass="form-control" />
+                                            <asp:DropDownList ID="ddlEditInsType" runat="server" CssClass="form-control" SelectedValue='<%# Bind("InsType") %>'>
+                                                <asp:ListItem Text="" Value="" />
+                                                <asp:ListItem Text="Primary" Value="Primary" />
+                                                <asp:ListItem Text="Secondary" Value="Secondary" />
+                                            </asp:DropDownList>
                                         </td>
 
                                         <td>
@@ -256,6 +270,7 @@
                                 </EditItemTemplate>
 
                             </asp:ListView>
+
 
                             <h5>Prescription information</h5>
                             <asp:ListView ID="Rx_Info" runat="server" DataKeyNames="PrescriptionID">
@@ -290,51 +305,76 @@
                         </div>
                         <div runat="server" class="AgentElement">
                             <h5>Flag</h5>
-                            <asp:Button ID="btnCreateFlag" runat="server" Text="Create Flag" OnClick="btnCreateFlag_Click" CssClass="btn btn-primary" />
 
-                            <!-- Flag List -->
-                            <asp:ListView ID="Flag_info" runat="server">
+                            <!-- Create New Flag Button (opens modal) -->
+                            <asp:Button ID="Button1" runat="server" Text="Create New Flag" OnClientClick="openFlagModal(); return false;" CssClass="btn btn-primary" Visible="true" />
+
+                            <br />
+                            <br />
+
+                            <!-- ListView to show existing Flags -->
+                            <asp:ListView ID="Flag_info" runat="server" DataKeyNames="PrescriptionID">
                                 <LayoutTemplate>
-                                    <table style="border: solid 2px #336699;" cellspacing="0" cellpadding="3" rules="all">
-                                        <tr style="background-color: #336699; color: White;">
-                                            <th>Flag Status</th>
-                                            <th>Due Date</th>
-                                            <th>Flag Note</th>
-                                            <th>Actions</th>
-                                            <!-- Added actions column for the buttons -->
-                                        </tr>
+                                    <table style="border: solid 2px #336699;" cellspacing="0" cellpadding="5" rules="all" class="table table-bordered">
+                                        <thead style="background-color: #336699; color: white;">
+                                            <tr>
+                                                <th>Flag Status</th>
+                                                <th>Due Date</th>
+                                                <th>Flag Note</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
                                         <tbody>
                                             <asp:PlaceHolder ID="itemPlaceHolder" runat="server" />
                                         </tbody>
                                     </table>
                                 </LayoutTemplate>
+
                                 <ItemTemplate>
                                     <tr>
                                         <td><%# Eval("Flag_status") %></td>
-                                        <td><%# Eval("Flag_DueDate") %></td>
-                                        <td><%# Eval("Flag_note") %></td>
+                                        <td><%# Eval("Flag_DueDate", "{0:yyyy-MM-dd}") %></td>
+                                        <td id="Flag_Note" runat="server"><%# Eval("Flag_note") %></td>
                                         <td>
-                                            <!-- Complete Flag Button -->
-                                            <asp:Button ID="btnCompleteFlag" runat="server" Text="Complete Flag" CommandName="CompleteFlag" CommandArgument='<%# Eval("FlagID") %>' OnCommand="FlagCommand" />
+                                            <!-- Complete Flag Button (only shown if flag is not already completed) -->
+                                            <asp:Button
+                                                ID="Button2"
+                                                runat="server"
+                                                Text="Complete Flag"
+                                                CommandName="CompleteFlag"
+                                                CommandArgument='<%# Eval("PrescriptionID") %>'
+                                                OnCommand="FlagCommand"
+                                                CssClass="btn btn-success" />
                                         </td>
                                     </tr>
                                 </ItemTemplate>
+
+                                <EmptyDataTemplate>
+                                    <tr>
+                                        <td colspan="4" style="text-align: center;">No flags found for this prescription.</td>
+                                    </tr>
+                                </EmptyDataTemplate>
                             </asp:ListView>
 
-                            <!-- Modal for Creating Flag -->
-                            <div id="flagModal" style="display: none;">
+                            <!-- Modal Popup for Creating New Flag -->
+                            <div id="flagModal" style="display: none; position: fixed; top: 30%; left: 40%; background: white; padding: 20px; border: 2px solid #336699; box-shadow: 0px 0px 10px #888;">
                                 <div class="modal-content">
-                                    <h3>Create Flag</h3>
-                                    <label for="txtFlagDate">Due Date:</label>
-                                    <input type="date" id="txtFlagDate" runat="server" class="form-control" />
-                                    <label for="txtFlagNote">Flag Note:</label>
-                                    <textarea id="txtFlagNote" runat="server" class="form-control"></textarea>
-                                    <br />
+                                    <h3>Create New Flag</h3>
+
+                                    <label for="txtFlagDate">Due Date:</label><br />
+                                    <input type="date" id="txtFlagDate" runat="server" class="form-control" /><br />
+
+                                    <label for="txtFlagNote">Flag Note:</label><br />
+                                    <textarea id="txtFlagNote" runat="server" class="form-control"></textarea><br />
+
                                     <asp:Button ID="btnSubmitFlag" runat="server" Text="Submit Flag" OnClick="btnSubmitFlag_Click" CssClass="btn btn-success" />
-                                    <asp:Button ID="btnCancel" runat="server" Text="Cancel" OnClientClick="cancelFlag(); return false;" CssClass="btn btn-danger" />
+                                    &nbsp;
+                                    <asp:Button ID="btnCancelFlag" runat="server" Text="Cancel" OnClientClick="cancelFlag(); return false;" CssClass="btn btn-danger" />
                                 </div>
                             </div>
+
                         </div>
+
 
                     </div>
                     <div runat="server" class="AgentElement" style="float: right; width: 20%;">

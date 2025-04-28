@@ -37,6 +37,7 @@ namespace MedUI
                 if (Session["viewID"] != null && (int)Session["viewID"] == 1)
                 {
                     ClientScript.RegisterStartupScript(this.GetType(), "showDivs", "showAgentDivs();", true);
+                    CheckForExistingFlag(Convert.ToInt32(Rx_Info.DataKeys[0].Value));
                 }
                 else
                 {
@@ -65,7 +66,7 @@ namespace MedUI
                 SELECT PrescriptionID, Prescription_Name, Prescription_Dose, Prescription_DaySupply, Prescription_Quantity, Doctor_Name, Doctor_Phone, Doctor_Address 
                 FROM Prescription WHERE PatientID = @PatientID;
 
-                SELECT Flag_status, Flag_DueDate, Flag_note 
+                SELECT Flag_status, Flag_DueDate, Flag_note, PrescriptionID 
                 FROM Prescription WHERE PatientID = @PatientID AND Flag_status IS NOT NULL;
 
                 SELECT Log.Notes, Log.Date, Log.AgentID 
@@ -112,8 +113,30 @@ namespace MedUI
                         Log_Info.DataBind();
                     }
                 }
+
+            }
+            if ((int)Session["viewID"] == 1)
+            {
+                CheckForExistingFlag(Convert.ToInt32(Rx_Info.DataKeys[0].Value));
             }
         }
+
+        private void CheckForExistingFlag(int prescriptionId)
+        {
+            using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["MedInfoDB"].ConnectionString))
+            {
+                string query = "SELECT COUNT(*) FROM Prescription WHERE PrescriptionID = @PrescriptionID AND Flag_status IS NOT NULL";
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@PrescriptionID", prescriptionId);
+                    conn.Open();
+
+                    int flagCount = (int)cmd.ExecuteScalar(); // Count number of existing flags
+                    Button1.Visible = flagCount == 0; // Hide the button if there are existing flags
+                }
+            }
+        }
+
 
 
         /*Patient info updating*/
@@ -265,6 +288,7 @@ namespace MedUI
             BindListViewControls(); // refresh ListView
         }
 
+
         /*Insurance Info updating*/
         protected void Ins_Info_ItemEditing(object sender, ListViewEditEventArgs e)
         {
@@ -280,28 +304,28 @@ namespace MedUI
 
         protected void Ins_Info_ItemUpdating(object sender, ListViewUpdateEventArgs e)
         {
-            ListViewItem item = Insurance_Info.Items[e.ItemIndex];
-            string insuranceId = Insurance_Info.DataKeys[e.ItemIndex].Value.ToString();
+            ListViewItem item = Ins_Info.Items[e.ItemIndex];
+            string insuranceId = Ins_Info.DataKeys[e.ItemIndex].Value.ToString();
 
             // Find controls
             TextBox txtName = (TextBox)item.FindControl("txtEditName");
-            TextBox txtInsuranceClassification = (TextBox)item.FindControl("txtEditInsuranceClassification");
+            DropDownList ddlInsuranceClassification = (DropDownList)item.FindControl("ddlEditClassification");
             TextBox txtRxBin = (TextBox)item.FindControl("txtEditRxBin");
             TextBox txtRxGrp = (TextBox)item.FindControl("txtEditRxGrp");
             TextBox txtRxPCN = (TextBox)item.FindControl("txtEditRxPCN");
-            TextBox txtPersonCode = (TextBox)item.FindControl("txtEditPersonCode");
-            TextBox txtPhone = (TextBox)item.FindControl("txtEditPhone");
-            TextBox txtInsType = (TextBox)item.FindControl("txtEditInsType");
+            //TextBox txtPersonCode = (TextBox)item.FindControl("txtEditPersonCode");
+            //TextBox txtPhone = (TextBox)item.FindControl("txtEditPhone");
+            DropDownList ddlInsType = (DropDownList)item.FindControl("ddlEditInsType");
 
             // New values
             string name = txtName.Text.Trim();
-            string insuranceClassification = txtInsuranceClassification.Text.Trim();
+            string insuranceClassification = ddlInsuranceClassification.SelectedValue;
             string rxBin = txtRxBin.Text.Trim();
             string rxGrp = txtRxGrp.Text.Trim();
             string rxPCN = txtRxPCN.Text.Trim();
-            string personCode = txtPersonCode.Text.Trim();
-            string phone = txtPhone.Text.Trim();
-            string insType = txtInsType.Text.Trim();
+            //string personCode = txtPersonCode?.Text.Trim() ?? "";
+            //string phone = txtPhone?.Text.Trim() ?? "";
+            string insType = ddlInsType.SelectedValue;
 
             // 1. Get current values
             Dictionary<string, string> currentValues = new Dictionary<string, string>();
@@ -310,7 +334,7 @@ namespace MedUI
             using (SqlConnection conn = new SqlConnection(connStr))
             {
                 string selectQuery = @"SELECT Name, InsuranceClassification, RxBin, RxGrp, RxPCN, PersonCode, Phone, InsType
-                               FROM Insurance WHERE InsuranceID = @InsuranceID";
+                       FROM Insurance WHERE InsuranceID = @InsuranceID";
                 using (SqlCommand cmd = new SqlCommand(selectQuery, conn))
                 {
                     cmd.Parameters.AddWithValue("@InsuranceID", insuranceId);
@@ -323,8 +347,8 @@ namespace MedUI
                         currentValues["RxBin"] = reader["RxBin"].ToString();
                         currentValues["RxGrp"] = reader["RxGrp"].ToString();
                         currentValues["RxPCN"] = reader["RxPCN"].ToString();
-                        currentValues["PersonCode"] = reader["PersonCode"].ToString();
-                        currentValues["Phone"] = reader["Phone"].ToString();
+                        //currentValues["PersonCode"] = reader["PersonCode"].ToString();
+                        //currentValues["Phone"] = reader["Phone"].ToString();
                         currentValues["InsType"] = reader["InsType"].ToString();
                     }
                     conn.Close();
@@ -335,25 +359,23 @@ namespace MedUI
             using (SqlConnection conn = new SqlConnection(connStr))
             {
                 string updateQuery = @"UPDATE Insurance SET 
-                                   Name = @Name,
-                                   InsuranceClassification = @InsuranceClassification,
-                                   RxBin = @RxBin,
-                                   RxGrp = @RxGrp,
-                                   RxPCN = @RxPCN,
-                                   PersonCode = @PersonCode,
-                                   Phone = @Phone,
-                                   InsType = @InsType
-                               WHERE InsuranceID = @InsuranceID";
+                           Name = @Name,
+                           InsuranceClassification = @InsuranceClassification,
+                           RxBin = @RxBin,
+                           RxGrp = @RxGrp,
+                           RxPCN = @RxPCN,
+                           InsType = @InsType
+                       WHERE InsuranceID = @InsuranceID";
 
                 using (SqlCommand cmd = new SqlCommand(updateQuery, conn))
                 {
                     cmd.Parameters.AddWithValue("@Name", (object)name ?? DBNull.Value);
-                    cmd.Parameters.AddWithValue("@InsuranceClassification", insuranceClassification);
-                    cmd.Parameters.AddWithValue("@RxBin", rxBin);
+                    cmd.Parameters.AddWithValue("@InsuranceClassification", (object)insuranceClassification ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@RxBin", (object)rxBin ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@RxGrp", (object)rxGrp ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@RxPCN", (object)rxPCN ?? DBNull.Value);
-                    cmd.Parameters.AddWithValue("@PersonCode", (object)personCode ?? DBNull.Value);
-                    cmd.Parameters.AddWithValue("@Phone", (object)phone ?? DBNull.Value);
+                    //cmd.Parameters.AddWithValue("@PersonCode", (object)personCode ?? DBNull.Value);
+                    //cmd.Parameters.AddWithValue("@Phone", (object)phone ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@InsType", (object)insType ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@InsuranceID", insuranceId);
 
@@ -369,8 +391,8 @@ namespace MedUI
             if (currentValues["RxBin"] != rxBin) changeNotes.Add($"RxBin changed from '{currentValues["RxBin"]}' to '{rxBin}'");
             if (currentValues["RxGrp"] != rxGrp) changeNotes.Add($"RxGrp changed from '{currentValues["RxGrp"]}' to '{rxGrp}'");
             if (currentValues["RxPCN"] != rxPCN) changeNotes.Add($"RxPCN changed from '{currentValues["RxPCN"]}' to '{rxPCN}'");
-            if (currentValues["PersonCode"] != personCode) changeNotes.Add($"PersonCode changed from '{currentValues["PersonCode"]}' to '{personCode}'");
-            if (currentValues["Phone"] != phone) changeNotes.Add($"Phone changed from '{currentValues["Phone"]}' to '{phone}'");
+            //if (currentValues["PersonCode"] != personCode) changeNotes.Add($"PersonCode changed from '{currentValues["PersonCode"]}' to '{personCode}'");
+            //if (currentValues["Phone"] != phone) changeNotes.Add($"Phone changed from '{currentValues["Phone"]}' to '{phone}'");
             if (currentValues["InsType"] != insType) changeNotes.Add($"Insurance Type changed from '{currentValues["InsType"]}' to '{insType}'");
 
             if (changeNotes.Count > 0)
@@ -389,36 +411,89 @@ namespace MedUI
                 }
             }
 
-            Insurance_Info.EditIndex = -1;
+            Ins_Info.EditIndex = -1;
             BindListViewControls();
         }
-
 
         protected void FlagCommand(object sender, CommandEventArgs e)
         {
             if (e.CommandName == "CompleteFlag")
             {
-                int flagId = Convert.ToInt32(e.CommandArgument);  // Get FlagID from CommandArgument
+                int prescriptionId = Convert.ToInt32(e.CommandArgument); // Retrieve PrescriptionID from CommandArgument.
 
-                // Update the flag's status in the database to 'Completed' (or any other status)
-                string query = "UPDATE Flag SET Flag_status = 'Completed' WHERE FlagID = @FlagID";
+                string flagNote = ""; // Example note when completing a flag. Adjust as necessary.
 
+                // Update the database to mark the flag as completed
                 using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["MedInfoDB"].ConnectionString))
-                using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
-                    cmd.Parameters.AddWithValue("@FlagID", flagId);
-                    conn.Open();
-                    cmd.ExecuteNonQuery();
+                    string updateQuery = @"
+                        SELECT Flag_note
+                        FROM Prescription
+                        WHERE PrescriptionID = @PrescriptionID;
+                        
+                        UPDATE Prescription
+                        SET Flag_status = NULL, Flag_DueDate = NULL
+                        WHERE PrescriptionID = @PrescriptionID;";
+
+                    using (SqlCommand cmd = new SqlCommand(updateQuery, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@PrescriptionID", prescriptionId);
+
+                        conn.Open();
+                        cmd.ExecuteNonQuery();
+
+                        flagNote = cmd.ExecuteScalar()?.ToString() ?? "Flag Complete";
+                    }
                 }
 
-                // Optionally, you can also log the completion of the flag
-                LogFlagCompletion(flagId);
+                // Log the flag completion
+                string logMessage = $"Flag Completed: '{flagNote}'";
+                string agentId = Session["AgentID"].ToString(); // Assuming the agent's ID is stored in session.
+                InsertLog(prescriptionId, agentId, logMessage);
 
-                // Rebind the ListView to reflect the changes
-                BindFlagInfo();
+                // Refresh the ListView after completing the flag
+                BindListViewControls();
             }
         }
 
+
+        protected void btnSubmitFlag_Click(object sender, EventArgs e)
+        {
+            // Retrieve the PrescriptionID from the DataKeys collection
+            int prescriptionId = Convert.ToInt32(Rx_Info.DataKeys[0].Value); // Use the correct index based on your item in the ListView
+
+            string flagNote = txtFlagNote.Value.Trim(); // Assuming you have a TextBox or similar control for flag note.
+            DateTime flagDueDate = Convert.ToDateTime(txtFlagDate.Value); // Assuming a TextBox for the due date.
+
+            // Insert the flag into the database
+            using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["MedInfoDB"].ConnectionString))
+            {
+                string updateQuery = @"
+                    UPDATE Prescription
+                    SET Flag_status = 1, Flag_DueDate = @FlagDueDate, Flag_note = @FlagNote
+                    WHERE PrescriptionID = @PrescriptionID";
+
+                using (SqlCommand cmd = new SqlCommand(updateQuery, conn))
+                {
+                    cmd.Parameters.AddWithValue("@PrescriptionID", prescriptionId);
+                    cmd.Parameters.AddWithValue("@FlagDueDate", flagDueDate);
+                    cmd.Parameters.AddWithValue("@FlagNote", flagNote);
+
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
+            // Log the flag creation
+            string logMessage = $"Flag Created: '{flagNote}'";
+            string agentId = Session["AgentID"].ToString(); // Assuming the agent's ID is stored in session.
+            InsertLog(prescriptionId, agentId, logMessage);
+
+            // Refresh the ListView after submitting the flag
+            BindListViewControls();
+        }
+
+        /*
         private void LogFlagCompletion(int flagId)
         {
             // You can log this flag completion to a log table if needed
@@ -490,8 +565,8 @@ namespace MedUI
             // Rebind the ListView to show the new flag
             BindFlagInfo();
         }
+        */
 
-        
 
 
         private void InsertLog(int prescriptionId, string agentId, string note)
